@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { within, userEvent } from "@storybook/testing-library";
 
 import { Page } from "./Page";
-import CHANGELOG from "./CHANGELOG.md";
+import CHANGELOG from "./CHANGELOG-MASSIVE.md";
 
 const meta: Meta<typeof Page> = {
   title: "Example/Page",

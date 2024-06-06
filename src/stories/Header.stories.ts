@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
 import { Header } from "./Header";
-import CHANGELOG from "./CHANGELOG.md";
+import CHANGELOG from "./CHANGELOG-SHORT.md";
 
 const meta: Meta<typeof Header> = {
   title: "Example/Header",

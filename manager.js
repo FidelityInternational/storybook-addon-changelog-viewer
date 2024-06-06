@@ -1,1 +1,3 @@
-export * from "./dist/manager";
+import './dist/manager';
+
+

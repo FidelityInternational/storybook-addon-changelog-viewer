@@ -2,9 +2,7 @@ import React, { useMemo } from "react";
 import { styled } from "@storybook/theming";
 import { UL, LI, A } from "@storybook/components";
 import { marked } from "marked";
-// @ts-expect-error
 import { mangle } from "marked-mangle";
-// @ts-expect-error
 import { gfmHeadingId } from "marked-gfm-heading-id";
 
 marked.use(mangle());
@@ -12,59 +10,67 @@ marked.use(gfmHeadingId());
 
 const TabWrapper = styled.div`
   background: ${({ theme }) => theme.background.content};
-  min-height: 100vh;
-  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
 `;
 
 const TabInner = styled.div`
-  position: relative;
   display: flex;
   flex-direction: column;
-  margin-left: auto;
-  margin-right: auto;
+  justify-content: center;
   gap: 2rem;
 
   @media (min-width: 960px) {
     flex-direction: row;
     gap: 5rem;
+    padding: 4rem 24px;
   }
 `;
 
 const TabAside = styled.aside`
+  min-width: 15rem;
+  max-width: 21rem;
+  order: 1;
+
+  @media (min-width: 960px) {
+    order: 2;
+  }
+`;
+
+const TabToc = styled.div`
   flex-shrink: 0;
-  max-height: 40vh;
-  overflow-y: auto;
   padding: 2rem;
   padding-bottom: 0;
-  border-bottom: 2px solid ${({ theme }) => theme.appBorderColor};
 
   ul {
     margin-top: 0;
     padding-left: 1rem;
+    list-style: none;
   }
 
   @media (min-width: 960px) {
     position: fixed;
     top: ${({ theme }) => `${theme.layoutMargin}px`};
     bottom: 0;
-    left: 0;
-    width: 15rem;
-    max-height: 100vh;
-    margin-top: 4rem;
+    margin-top: 6rem;
+    margin-bottom: 6rem;
     padding-top: 0;
-    padding-right: 0;
-    border-right: 2px solid ${({ theme }) => theme.appBorderColor};
+    padding-right: 20px;
+    overflow: auto;
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+    scrollbar-width: none;
   }
 `;
 
 const TabMain = styled.main`
   padding: 2rem;
   padding-top: 0;
+  order: 2;
 
   @media (min-width: 960px) {
-    padding-top: 2rem;
+    padding-top: 0;
     padding-right: 0;
-    margin-left: 15rem;
+    order: 1;
   }
 `;
 
@@ -95,25 +101,31 @@ function findHeadingsWithSemVer(htmlString: string) {
 
 export const TabContent: React.FC<TabContentProps> = ({ markdown }) => {
   const html = useMemo(() => marked.parse(markdown), [markdown]);
-  const navigationItems = useMemo(() => findHeadingsWithSemVer(html), [html]);
+  const navigationItems = useMemo(() => {
+    if (typeof html === "string") {
+      return findHeadingsWithSemVer(html);
+    }
+  }, [html]);
 
   return (
     <TabWrapper>
       <TabInner>
-        <TabAside>
-          <UL>
-            {navigationItems.map(({ label, id }) => (
-              <LI key={id}>
-                <A href={`#${id}`}>{label}</A>
-              </LI>
-            ))}
-          </UL>
-        </TabAside>
         <TabMain
           dangerouslySetInnerHTML={{
             __html: html,
           }}
         />
+        <TabAside>
+          <TabToc>
+            <UL>
+              {navigationItems.map(({ label, id }) => (
+                <LI key={id}>
+                  <A href={`#${id}`}>{label}</A>
+                </LI>
+              ))}
+            </UL>
+          </TabToc>
+        </TabAside>
       </TabInner>
     </TabWrapper>
   );
